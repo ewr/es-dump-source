@@ -103,11 +103,14 @@ writer.pipe(process.stdout);
 runIndex = function(cb) {
   var search;
   idx = indices.shift();
+  debug("Running " + idx);
   if (!idx) {
     cb();
   }
   search = new ScrollSearch(es, idx, body);
-  search.pipe(writer);
+  search.pipe(writer, {
+    end: false
+  });
   return search.once("end", function() {
     debug("Got search end.");
     return runIndex(cb);
@@ -115,8 +118,8 @@ runIndex = function(cb) {
 };
 
 runIndex(function() {
-  console.error("Done.");
-  return process.exit(0);
+  debug("Done with indices");
+  return writer.end();
 });
 
 //# sourceMappingURL=runner.js.map

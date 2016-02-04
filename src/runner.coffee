@@ -86,18 +86,20 @@ writer.pipe(process.stdout)
 runIndex = (cb) ->
     idx = indices.shift()
 
+    debug "Running #{idx}"
+
     if !idx
         # we're all done
         cb()
 
     search = new ScrollSearch es, idx, body
 
-    search.pipe(writer)
+    search.pipe(writer, end:false)
 
     search.once "end", ->
         debug "Got search end."
         runIndex cb
 
 runIndex ->
-    console.error "Done."
-    process.exit(0)
+    debug "Done with indices"
+    writer.end()
